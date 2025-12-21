@@ -11,6 +11,10 @@ from llm_feedback import generate_feedback
 app = Flask(__name__)
 app.config["UPLOAD_FOLDER"] = "static/uploads"
 os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
+UPLOAD_FOLDER = "static/uploads"
+RESULT_FOLDER = "static/results"
+TF_FOLDER = "temp_frames"
+
 
 #Global variables
 streaming = True
@@ -25,8 +29,27 @@ processing_lock = threading.Lock()
 final_annotated_path = None
 video_source = 0  # default webcam
 
+def delete_folder(folder):
+    for filename in os.listdir(folder):
+        file_path = os.path.join(folder, filename)
+        try:
+            if os.path.isfile(file_path) or os.path.islink(file_path):
+                os.unlink(file_path)
+            elif os.path.isdir(file_path):
+                shutil.rmtree(file_path)
+        except Exception as e:
+            print(f"Failed to delete {file_path}: {e}")
+
 @app.route('/')
 def form():
+    df = pd.read_csv("segment_results/segment_ocean_hire.csv")
+    df.iloc[0:0].to_csv("segment_ocean_hire.csv", index=False)
+    df = pd.read_csv("ocean_hire_output_rt.csv")
+    df.iloc[0:0].to_csv("ocean_hire_output_rt.csv", index=False)
+    delete_folder(UPLOAD_FOLDER)
+    delete_folder(RESULT_FOLDER)
+    delete_folder(TF_FOLDER)
+
     return render_template('hire.html')
 
 @app.route('/upload_video', methods=['POST'])
@@ -48,6 +71,7 @@ def upload_video():
     app.config["VIDEO_SOURCE_PATH"] = filepath
     print(f"📁 Uploaded video set as source: {filepath}")
     return jsonify({"status": "uploaded", "path": filepath}), 200
+
 
 
 def process_segments(segment_duration=15):
@@ -321,8 +345,15 @@ def video_feed():
 @app.route('/reset_session')
 def reset_session():
     global streaming, segment_count, frame_buffer, all_segment_results, latest_result, video_source
-
+    df = pd.read_csv("segment_results/segment_ocean_hire.csv")
+    df.iloc[0:0].to_csv("segment_results/segment_ocean_hire.csv", index=False)
+    df = pd.read_csv("ocean_hire_output_rt.csv")
+    df.iloc[0:0].to_csv("ocean_hire_output_rt.csv", index=False)
     print("🔄 Resetting interview session...")
+    delete_folder(UPLOAD_FOLDER)
+    delete_folder(RESULT_FOLDER)
+    delete_folder(TF_FOLDER)
+    
 
     # Stop any ongoing streaming or processing
     streaming = False
