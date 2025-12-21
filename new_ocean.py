@@ -51,7 +51,7 @@ def ocean_average(frame_buffer,segment_count):
             return csv_path
         return None
 
-    openface_exe = r"C:\Users\mmm\Downloads\OpenFace_2.2.0_win_x64\FeatureExtraction.exe"
+    openface_exe =  r"C:\Users\mmm\Downloads\OpenFace_2.2.0_win_x64\FeatureExtraction.exe"
     final_csv = r"of_au.csv"
     temp_frame_folder = r"temp_frames"
     os.makedirs(temp_frame_folder, exist_ok=True)
