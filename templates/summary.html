@@ -133,15 +133,94 @@
           border-radius: 5px;
           transition: width 600ms ease, background-color 400ms ease;
         }
+         @media print {
+    body {
+      background: #fff !important;
+    }
+
+    .no-print {
+      display: none !important;
+    }
+
+    .card {
+      box-shadow: none !important;
+      border: none !important;
+    }
+
+    img {
+      max-width: 100% !important;
+      page-break-inside: avoid;
+    }
+
+    h2, h4, h5 {
+      page-break-after: avoid;
+    }
+
+    ul, p {
+      page-break-inside: avoid;
+    }
+  }
+  .ai-feedback-report {
+  text-align: left;
+  line-height: 1.6;
+}
+
+.ai-feedback-report h2 {
+  color: #2c3e50;
+  margin-top: 24px;
+}
+
+.ai-feedback-report h3 {
+  color: #1f8a70;
+  margin-top: 18px;
+}
+
+.ai-feedback-report ul, 
+.ai-feedback-report ol {
+  padding-left: 22px;
+  margin-bottom: 16px;
+}
+
+.ai-feedback-report li {
+  margin-bottom: 8px;
+}
+
+/* Keyword-based highlighting */
+.ai-feedback-report li:has(strong) {
+  font-weight: 500;
+}
+
+.ai-feedback-report strong {
+  color: #27ae60;
+}
+
+.ai-feedback-report em {
+  color: #e67e22;
+  font-style: normal;
+  font-weight: 600;
+}
+
+/* Closing emphasis */
+.ai-feedback-report h3:last-of-type + p {
+  background: #f8f9fa;
+  padding: 14px;
+  border-left: 5px solid #6f1d1b;
+  border-radius: 6px;
+}
       </style>
 
       <hr>
       <h5>🗣️ AI Feedback Summary</h5>
-      <p class="text-muted mt-3">{{ feedback }}</p>
+      <!-- <p class="text-muted mt-3">{{ feedback }}</p> -->
 
-      <div class="text-center mt-4">
-        <a href="/reset_session" class="btn btn-primary">🔁 Restart Analysis</a>
+      <div class="ai-feedback-report">
+       {{ feedback | safe }}
       </div>
+
+     <div class="text-center mt-4 no-print">
+      <button onclick="printReport()" class="btn btn-success me-2">🖨️ Print Report</button>
+      <a href="/reset_session" class="btn btn-primary">🔁 Restart Analysis</a>
+    </div>
     </div>
   </div>
 
@@ -203,6 +282,9 @@
       bar.style.backgroundColor = color;
     });
   });
+  function printReport() {
+    window.print();
+  }
   </script>
 </body>
 </html>
